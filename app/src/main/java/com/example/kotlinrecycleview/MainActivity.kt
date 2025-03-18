@@ -1,10 +1,9 @@
 package com.example.kotlinrecycleview
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -12,43 +11,38 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var datalist: ArrayList<DataClass>
-    lateinit var imageList: Array<Int>
-    lateinit var textList: Array<String>
-
+    private lateinit var adapterClass: AdapterClass
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        datalist = ArrayList()
 
-        imageList= arrayOf(
-            R.drawable.coat,
-            R.drawable.jeans,
-            R.drawable.pants,
-            R.drawable.shirt,
-            R.drawable.shoes,
-            R.drawable.sweater,
-            R.drawable.t_shirt
+        recyclerView = findViewById(R.id.recycleView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        )
-        textList= arrayOf(
-            "Coat",
-            "Jeans","Pants","Shirt","Shoes","Sweater","T-Shirt"
-        )
-        recyclerView=findViewById(R.id.recycleView)
-        recyclerView.layoutManager=LinearLayoutManager(this)
-        recyclerView.setHasFixedSize(true)
-
-        datalist= arrayListOf<DataClass>()
-getData()
-    }
-
-    private fun getData(){
-        for (i in imageList.indices) {
-            val dataClass = DataClass(imageList[i], textList[i])
-            datalist.add(dataClass)
+        datalist.apply {
+            add(DataClass(R.drawable.coat, "Coat", "A warm winter coat"))
+            add(DataClass(R.drawable.jeans, "Jeans", "Comfortable denim jeans"))
+            add(DataClass(R.drawable.pants, "Pants", "Casual pants"))
+            add(DataClass(R.drawable.shirt, "Shirt", "A nice formal shirt"))
+            add(DataClass(R.drawable.shoes, "Shoes", "Stylish sneakers"))
+            add(DataClass(R.drawable.sweater, "Sweater", "Soft wool sweater"))
+            add(DataClass(R.drawable.t_shirt, "T-Shirt", "A casual t-shirt"))
         }
-        recyclerView.adapter=AdapterClass(datalist)
+
+        adapterClass = AdapterClass(datalist) { item ->
+            val intent = Intent(this, DetailActivity::class.java).apply {
+                putExtra("title", item.dataTitle)
+                putExtra("imageResId", item.dataImage)
+                putExtra("description", item.dataDescription)
+            }
+            startActivity(intent)
+        }
+
+
+        recyclerView.adapter = adapterClass
     }
 }
